@@ -1,0 +1,57 @@
+pipeline{
+    agent any
+    stages{
+        stage('clone the source code'){
+            steps{
+        script{
+        try{
+                checkout([$class: 'GitSCM', 
+        branches: [[name: '*/master']], 
+        doGenerateSubmoduleConfigurations: false, 
+        extensions: [], submoduleCfg: [], 
+        userRemoteConfigs: [
+                [credentialsId: 'pramod_github', 
+        url: 'https://github.com/pramodkumarpanda/testng.git']]]
+            )
+        }
+        catch(Exception ex){
+                        echo "Failed"
+                        }
+}
+        }
+    }
+    
+    stage('Testing The source code by testng'){
+        steps{
+            script{
+                try{
+                  sh """
+                    cd catlog&&mvn clean;mvn compile;mvn test;mvn package
+                  """
+                }
+            catch(Exception ex){
+                        echo "Failed"
+                        }
+            }
+        }
+    }
+    stage('code analysis'){
+        steps{
+            script{
+                try{
+    sh """
+            /opt/sonar-scanner/bin/sonar-scanner -Dsonar.login=admin -Dsonar.password=admin -Dsonar.host.url=http://192.168.122.40:9000 -Dsonar.projectKey=ProjectMvn:MyProjectMvn -Dsonar.projectName=Catlog -Dsonar.sources=src/ -Dsonar.projectBaseDir=catlog/
+    """
+                    
+                }
+                catch (Exception ex){
+                    echo "Sonar Analysis gate Failed"
+                }
+            }
+        }
+    }
+}
+    
+}
+
+
