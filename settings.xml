@@ -1,0 +1,28 @@
+ <pluginGroups>
+    <!-- pluginGroup
+     | Specifies a further group identifier to use for plugin lookup.
+    <pluginGroup>com.your.plugins</pluginGroup>
+    -->
+   <pluginGroup>org.sonarsource.scanner.maven</pluginGroup>
+  </pluginGroups>
+<profile>
+            <id>sonar</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <sonar.host.url>
+                  http://192.168.122.10:9000
+                </sonar.host.url>
+                <sonar.projectName>
+                        pramod_test1
+                </sonar.projectName>
+                <sonar.login>
+                        admin
+                </sonar.login>
+                <sonar.password>
+                        admin@123
+                </sonar.password>
+            </properties>
+     </profile>
+
