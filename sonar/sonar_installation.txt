@@ -1,0 +1,60 @@
+yum install java-1.8.0-openjdk-devel
+wget https://sonarsource.bintray.com/Distribution/sonarqube/sonarqube-6.4.zip
+unzip sonarqube-6.4.zip -d /opt
+mv /opt/sonarqube-6.4 /opt/sonarqube
+vi /etc/systemd/system/sonar.service
+[Unit]
+Description=SonarQube service
+After=syslog.target network.target
+
+[Service]
+Type=forking
+
+ExecStart=/opt/sonarqube/bin/linux-x86-64/sonar.sh start
+ExecStop=/opt/sonarqube/bin/linux-x86-64/sonar.sh stop
+
+User=root
+Group=root
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+
+INSTALL MYSQLDB ON CENTOS-7:
+------------------------------------
+wget http://repo.mysql.com/mysql-community-release-el7-5.noarch.rpm
+    yum install wget -y
+    wget http://repo.mysql.com/mysql-community-release-el7-5.noarch.rpm
+    ls
+    rpm -ivh mysql-community-release-el7-5.noarch.rpm
+    yum install mysql-server
+    systemctl start mysqld
+    systemctl status mysqld
+    mysql_secure_installation
+    mysql -u root -p'sonar'
+----------------------------------------------
+sonar database connectivity:
+--------------------------------------------
+vi /opt/sonarqube/conf/sonar.properties
+	sonar.jdbc.username=root
+	sonar.jdbc.password=sonar
+sonar.jdbc.url=jdbc:mysql://192.168.122.30:3306/sonar?useUnicode=true&characterEncoding=utf8&rewriteBatchedStatements=true&useConfigs=maxPerformance&useSSL=false
+
+systemctl daemon-reload
+-----------------------------------------
+sonar command line utility
+----------------------------------
+sonar-scanner -Dsonar.projectKey=myproject -Dsonar.sources=
+
+ sonar-scanner -Dsonar.login=admin:admin -Dsonar.host.url=192.168.122.10:9000 -Dsonar.projectKey=Project:MyProject -Dsonar.projectName=SampleProject -Dsonar.sources=/root/login/src
+
+
+
+sonar.host.url=http://192.168.122.10:9000
+sonar.projectKey=Project:MyProject
+sonar.projectName=SampleProject
+sonar.sources=/root/login/src
+
+
+
+-Dsonar.login=admin -Dsonar.password=admin -Dsonar.host.url=http://192.168.122.10:9000 -Dsonar.projectKey=Project:MyProject1 -Dsonar.projectName=SampleProject1 -Dsonar.sources=/root/login/src
