@@ -32,13 +32,15 @@ wget http://repo.mysql.com/mysql-community-release-el7-5.noarch.rpm
     systemctl status mysqld
     mysql_secure_installation
     mysql -u root -p'sonar'
+    
+    create database sonar_db
 ----------------------------------------------
 sonar database connectivity:
 --------------------------------------------
 vi /opt/sonarqube/conf/sonar.properties
 	sonar.jdbc.username=root
 	sonar.jdbc.password=sonar
-sonar.jdbc.url=jdbc:mysql://192.168.122.30:3306/sonar?useUnicode=true&characterEncoding=utf8&rewriteBatchedStatements=true&useConfigs=maxPerformance&useSSL=false
+sonar.jdbc.url=jdbc:mysql://192.168.122.30:3306/sonar_db?useUnicode=true&characterEncoding=utf8&rewriteBatchedStatements=true&useConfigs=maxPerformance&useSSL=false
 
 systemctl daemon-reload
 -----------------------------------------
