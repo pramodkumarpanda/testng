@@ -1,5 +1,5 @@
 yum install java-1.8.0-openjdk-devel
-wget https://sonarsource.bintray.com/Distribution/sonarqube/sonarqube-6.4.zip
+ wget https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-6.4.zip
 unzip sonarqube-6.4.zip -d /opt
 mv /opt/sonarqube-6.4 /opt/sonarqube
 vi /etc/systemd/system/sonar.service
