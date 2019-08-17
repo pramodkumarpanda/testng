@@ -46,6 +46,17 @@ systemctl daemon-reload
 -----------------------------------------
 sonar command line utility
 ----------------------------------
+Troubleshooting:
+----------------
+if connectivity issue
+  login on mysqldata base
+     CREATE USER 'sonar'@'%' IDENTIFIED BY 'sonar';
+     GRANT ALL PRIVILEGES ON * . * TO 'newuser'@'localhost';
+For data base migrations:
+-----------------------------
+   /setup
+
+
 sonar-scanner -Dsonar.projectKey=myproject -Dsonar.sources=
 
  sonar-scanner -Dsonar.login=admin:admin -Dsonar.host.url=192.168.122.10:9000 -Dsonar.projectKey=Project:MyProject -Dsonar.projectName=SampleProject -Dsonar.sources=/root/login/src
