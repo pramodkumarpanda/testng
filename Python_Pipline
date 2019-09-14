@@ -1,0 +1,52 @@
+pipeline{
+    agent any
+    stages{
+        stage('Clone'){
+            steps {
+                script{
+                    checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'mycreds_hub', url: 'https://github.com/pramodkumarpanda/http-django.repo.git']]])
+                }
+            }
+        }
+        stage ('Sonar tool install'){
+            steps{
+                script{
+                    def var = tool name: 'sonar-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+                    sh """
+                    echo "$var"
+                    """
+                    }
+            }
+        }
+        stage ('Sonar scanner'){
+            steps{
+                script{
+                   def var = tool name: 'sonar-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+                   withSonarQubeEnv ('sonarserver'){
+                   sh """
+                   $var/bin/sonar-scanner -Dsonar.projectKey=Project:MyDjango -Dsonar.projectName=SampleDjango -Dsonar.sources=myproject
+                   """
+                   }
+                }
+            }
+        }
+        stage ('Upload to Artifactory'){
+            steps{
+                script{
+                    rtUpload (
+                            serverId: "Artifactory-1",
+                            spec:
+                                """{        
+                                "files": [
+                        {
+                             "pattern": "/var/lib/jenkins/workspace/python-pipeline/myproject/manage.py",
+                                "target": "cicd2/"
+                               }
+                            ]  
+                   }"""
+)
+                }
+            }
+        }
+    }
+}
