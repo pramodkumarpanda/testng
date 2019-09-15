@@ -18,15 +18,40 @@ pipeline{
                     }
             }
         }
+        
         stage ('Sonar scanner'){
             steps{
                 script{
                    def var = tool name: 'sonar-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
                    withSonarQubeEnv ('sonarserver'){
                    sh """
-                   $var/bin/sonar-scanner -Dsonar.projectKey=Project:MyDjango -Dsonar.projectName=SampleDjango -Dsonar.sources=myproject
+                   $var/bin/sonar-scanner -Dsonar.projectKey=Project:python -Dsonar.projectName=python_new -Dsonar.sources=myproject
                    """
+                   sleep(20)
                    }
+                }
+            }
+        }
+        stage('Check the quality gate'){
+            steps{
+                script{
+                    try{
+                timeout(time: 1, unit: 'MINUTES') {
+                def qg = waitForQualityGate()
+                echo $qg.status
+                if (qg.status != 'OK') {
+                    error "Pipeline aborted due to quality gate failure: ${qg.status}"
+                    }            
+                }    
+                    
+                    
+                    }
+                    catch(Exception qg_error){
+                        println "Before Calling the function"
+                        alrt_error()
+                        println "After Calling the function"
+                        error "Failed bcz of quality gate"
+                    }
                 }
             }
         }
@@ -39,14 +64,21 @@ pipeline{
                                 """{        
                                 "files": [
                         {
-                             "pattern": "/var/lib/jenkins/workspace/python-pipeline/myproject/manage.py",
+                             "pattern": "/var/lib/jenkins/workspace/python-pipeline/myproject.tar",
                                 "target": "cicd2/"
                                }
                             ]  
                    }"""
 )
                 }
+                
+        
             }
         }
+        
     }
 }
+void alrt_error(){
+                    
+ sh "echo 'quality gate failed'"
+                }
