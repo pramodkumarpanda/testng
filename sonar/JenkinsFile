@@ -54,4 +54,61 @@ pipeline{
     
 }
 
-
+UPDATED CLASS
+#############################################################################################################
+pipeline{
+    agent any
+    stages{
+        stage('clone the source code'){
+            steps{
+                script{
+                    try{
+                        
+            
+                    checkout([$class: 'GitSCM', 
+                    branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], 
+                    userRemoteConfigs: [[credentialsId: 'abhisek_github', 
+                    url: 'https://github.com/pramodkumarpanda/online.git']]])    
+                        
+                        
+                    }
+                 catch(Exception V_error){
+                     sh """
+                        echo "Send some notifications"
+                     """
+                 }
+                }
+            }
+        }
+        stage('build the source code'){
+            steps{
+                script{
+                    def mavnen_loc=tool(name: 'maven3.1', type: 'maven')
+                    sh """
+                        cd login&& $mavnen_loc/bin/mvn clean test package
+                        
+                """
+                }
+            }
+        }
+       
+             stage('Quality of the Code'){
+                 steps{
+                     
+                     script{
+            
+                           
+                             withSonarQubeEnv('abhisek'){
+                                 def abc=tool name: 'soanr-scanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+                                 sh """
+                                        $abc/bin/sonar-scanner -Dsonar.projectKey=ProjectMvn:MyProjectMvn -Dsonar.projectName=login -Dsonar.sources=src/ -Dsonar.projectBaseDir=login/
+                                """
+                                }
+                         
+                     }
+                     
+                     
+                 }
+             }
+    }
+}
